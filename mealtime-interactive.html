@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MealTime — Interaktiv Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════ TOKENS & RESET ══════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #f9fafb;
+  color: #1f2937;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+:root {
+  --g: #27ae60;
+  --g-l: #2ecc71;
+  --g-p: #f0fdf4;
+  --g-b: #bbf7d0;
+  --g-d: #166534;
+  --b: #2563eb;
+  --b-p: #eff6ff;
+  --b-b: #bfdbfe;
+  --r: 14px;
+  --rp: 32px;
+  --sh: 0 20px 60px rgba(0,0,0,.15), 0 4px 12px rgba(0,0,0,.08);
+  --sh2: 0 8px 24px rgba(0,0,0,.09);
+}
+
+/* ══════════════════ PART 1: HERO DIAGRAM ══════════════════ */
+.hero {
+  background: linear-gradient(180deg, #ecfdf5 0%, #f9fafb 100%);
+  padding: 72px 24px 80px;
+  border-bottom: 1px solid #d1fae5;
+}
+.hero-inner { max-width: 1300px; margin: 0 auto; }
+
+.hero-top { text-align: center; margin-bottom: 64px; }
+.hero-pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: white; border: 1px solid #bbf7d0;
+  border-radius: 100px; padding: 5px 16px;
+  font-size: 11px; font-weight: 600; color: var(--g);
+  letter-spacing: .06em; margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+}
+.hero-dot { width:8px; height:8px; border-radius:50%; background:var(--g-l); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(22px, 3.2vw, 42px);
+  font-weight: 700; color: #111827;
+  line-height: 1.2; letter-spacing: -.02em;
+  max-width: 750px; margin: 0 auto 14px;
+}
+.hero h1 em { font-style: italic; color: var(--g); }
+.hero-sub { font-size: 15px; color: #6b7280; max-width: 480px; margin: 0 auto; line-height: 1.65; }
+
+/* ── Diagram ── */
+.diagram { display: flex; flex-direction: column; align-items: center; gap: 0; }
+
+.diag-start { display: flex; align-items: flex-start; justify-content: center; gap: 0; }
+
+/* Small diagram phones */
+.dp { width: 100px; background: #1a1a1a; border-radius: 22px; padding: 7px 5px 9px; box-shadow: var(--sh); transition: transform .3s; flex-shrink:0; cursor: pointer; }
+.dp:hover { transform: translateY(-6px) scale(1.03); }
+.dp-notch { width: 30px; height: 6px; background: #111; border-radius: 3px; margin: 0 auto 6px; }
+.dp-screen { background: white; border-radius: 14px; overflow: hidden; min-height: 155px; display: flex; flex-direction: column; }
+.dp-status { display:flex; justify-content:space-between; padding: 3px 6px; font-size: 6px; font-weight:700; }
+.dp-body { flex:1; padding: 5px 5px 6px; display: flex; flex-direction: column; gap: 4px; background: #fafafa; }
+
+.dp-appbar { background: linear-gradient(135deg, var(--g), #1a9248); border-radius: 7px; padding: 6px; color: white; text-align: center; }
+.dp-appbar .an { font-size: 9px; font-weight: 800; }
+.dp-appbar .as { font-size: 6px; opacity: .8; margin-top: 1px; }
+
+.dp-inp { background: white; border: 1px solid #e5e7eb; border-radius: 5px; height: 15px; display:flex; align-items:center; padding: 0 5px; gap:3px; }
+.dp-inp span { font-size: 6px; color: #9ca3af; }
+.dp-btn { border-radius: 5px; height: 17px; display:flex; align-items:center; justify-content:center; font-size: 7px; font-weight:700; }
+.dp-btn.g { background: var(--g); color: white; }
+.dp-btn.go { border: 1.5px solid var(--g); color: var(--g); background: white; }
+.dp-btn.b { background: var(--b); color: white; }
+
+.dp-mode-card { background: white; border: 1.5px solid #e5e7eb; border-radius: 7px; padding: 5px 6px; display:flex; align-items:center; gap:5px; }
+.dp-mode-card.act { border-color: var(--g); background: var(--g-p); }
+.dp-mode-card.act-b { border-color: var(--b); background: var(--b-p); }
+.dp-mode-card .mi { font-size: 13px; }
+.dp-mode-card .mt { font-size: 7px; font-weight:700; color:#111; }
+.dp-mode-card .ms { font-size: 5.5px; color:#6b7280; }
+.dp-mode-card .mc { margin-left:auto; width:12px; height:12px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:7px; color:white; }
+.dp-mode-card .mc.g { background: var(--g); }
+.dp-mode-card .mc.b { background: var(--b); }
+
+.dp-food { background: white; border: 1px solid #f3f4f6; border-radius: 6px; padding: 4px 5px; display:flex; align-items:center; gap:4px; }
+.dp-food .fe { font-size: 15px; }
+.dp-food .fn { font-size: 6.5px; font-weight:700; color:#111; }
+.dp-food .fp { font-size: 6px; color: var(--g); font-weight:600; }
+.dp-food .ft { margin-left:auto; background: var(--g-p); border:1px solid var(--g-b); border-radius:3px; padding: 1px 4px; font-size:5.5px; color:var(--g); font-weight:600; }
+
+.dp-cart-item { background: white; border: 1px solid #f3f4f6; border-radius: 5px; padding: 3px 5px; display:flex; align-items:center; gap:3px; }
+.dp-ci-dot { width:5px; height:5px; border-radius:50%; background:var(--g); flex-shrink:0; }
+.dp-ci-dot.b { background:var(--b); }
+.dp-ci-name { font-size: 6px; color:#374151; flex:1; }
+.dp-ci-price { font-size: 6px; font-weight:600; color:#111; }
+
+.dp-addr { background: var(--g-p); border:1px solid var(--g-b); border-radius:5px; padding:4px 5px; display:flex; align-items:center; gap:3px; }
+.dp-addr.b { background: var(--b-p); border-color: var(--b-b); }
+.dp-addr .ai { font-size:8px; }
+.dp-addr .at { font-size:5.5px; font-weight:600; color:var(--g); }
+.dp-addr.b .at { color:var(--b); }
+.dp-addr .asub { font-size:5px; color:#6b7280; }
+
+.dp-success { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; gap:5px; background:linear-gradient(150deg,#f0fdf4,#dcfce7); border-radius:8px; padding:10px; }
+.dp-success .sc { width:32px; height:32px; background:var(--g); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; color:white; box-shadow:0 4px 14px rgba(39,174,96,.35); }
+.dp-success .sc.b { background:var(--b); box-shadow:0 4px 14px rgba(37,99,235,.35); }
+.dp-success.b { background:linear-gradient(150deg,#eff6ff,#dbeafe); }
+.dp-success .st { font-size:7.5px; font-weight:800; color:#111; text-align:center; }
+.dp-success .ss { font-size:5.5px; color:#6b7280; text-align:center; line-height:1.4; }
+.dp-success .sid { background:white; border-radius:4px; padding:2px 8px; font-size:6px; font-weight:700; color:var(--g); border:1px solid var(--g-b); }
+.dp-success .sid.b { color:var(--b); border-color:var(--b-b); }
+
+.dp-week { display:flex; flex-direction:column; gap:2.5px; }
+.dp-wt { font-size:7.5px; font-weight:700; color:#111; margin-bottom:2px; }
+.dp-wr { background:white; border:1px solid #f3f4f6; border-radius:5px; padding:3px 4px; display:flex; align-items:center; gap:3px; }
+.dp-wr .wd { font-size:5.5px; font-weight:700; color:#9ca3af; width:15px; }
+.dp-wr .wf { font-size:6px; color:#111; flex:1; }
+.dp-wr .wk { font-size:5.5px; font-weight:600; color:var(--b); background:var(--b-p); padding:1px 3px; border-radius:3px; }
+
+.dp-survey { display:flex; flex-direction:column; gap:3px; }
+.dp-srow { background:white; border:1px solid #f3f4f6; border-radius:5px; padding:3px 5px; display:flex; justify-content:space-between; }
+.dp-srow .sl { font-size:6px; color:#6b7280; }
+.dp-srow .sv { font-size:6.5px; font-weight:600; color:#111; }
+
+/* Diagram unit */
+.diag-unit { display:flex; flex-direction:column; align-items:center; gap:10px; }
+.diag-num { width:22px; height:22px; border-radius:50%; background:var(--g); color:white; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+.diag-num.b { background:var(--b); }
+.diag-cap { font-size:10px; font-weight:600; color:#374151; text-align:center; max-width:95px; line-height:1.3; }
+
+/* Horizontal arrow */
+.harrow { display:flex; align-items:flex-end; padding-bottom:40px; flex-shrink:0; }
+/* Vertical stem */
+.vstem { width:2px; height:36px; background:linear-gradient(to bottom, var(--g), #d1fae5); }
+/* Branch row */
+.branch-row { display:flex; width:100%; max-width:1200px; position:relative; align-items:flex-start; }
+.branch-row::before { content:''; position:absolute; top:16px; left:10%; right:10%; height:2px; background:#e5e7eb; z-index:0; }
+.branch-col { flex:1; display:flex; flex-direction:column; align-items:center; position:relative; z-index:1; }
+.branch-col::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:2px; height:16px; }
+.branch-col.gc::before { background:var(--g); }
+.branch-col.bc::before { background:var(--b); }
+.branch-pill { border-radius:10px; padding:7px 18px; margin-bottom:20px; border:1.5px solid; text-align:center; }
+.branch-pill.g { background:var(--g-p); border-color:var(--g-b); }
+.branch-pill.b { background:var(--b-p); border-color:var(--b-b); }
+.branch-pill h3 { font-family:'Playfair Display',serif; font-size:13px; font-weight:700; }
+.branch-pill.g h3 { color:var(--g); }
+.branch-pill.b h3 { color:var(--b); }
+.branch-pill p { font-size:10px; color:#6b7280; margin-top:1px; }
+.branch-phones { display:flex; align-items:flex-start; gap:0; justify-content:center; }
+
+/* ══════════════════ PART 2: INTERACTIVE DEMO ══════════════════ */
+.demo-section {
+  background: #111827;
+  padding: 96px 24px;
+  position: relative;
+  overflow: hidden;
+}
+.demo-section::before {
+  content:''; position:absolute; top:-200px; left:50%; transform:translateX(-50%);
+  width:800px; height:600px;
+  background:radial-gradient(ellipse, rgba(39,174,96,.15) 0%, transparent 70%);
+  pointer-events:none;
+}
+
+.demo-inner { max-width: 1100px; margin: 0 auto; position:relative; z-index:1; }
+
+.demo-header { text-align:center; margin-bottom:64px; }
+.demo-label {
+  display:inline-block; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+  color:#4ade80; background:rgba(74,222,128,.1); border:1px solid rgba(74,222,128,.25);
+  border-radius:100px; padding:4px 14px; margin-bottom:14px;
+}
+.demo-header h2 {
+  font-family:'Playfair Display',serif; font-size:clamp(22px,3.5vw,42px);
+  font-weight:700; color:white; letter-spacing:-.02em; line-height:1.2;
+}
+.demo-header h2 span { color:#4ade80; }
+.demo-header p { color:#6b7280; font-size:15px; margin-top:10px; }
+
+/* ── Phone mockup wrapper ── */
+.demo-stage {
+  display:flex; align-items:flex-start; justify-content:center; gap:64px;
+  flex-wrap: wrap;
+}
+
+.phone-mockup-wrap { display:flex; flex-direction:column; align-items:center; gap:20px; }
+
+/* Big interactive phone */
+.iphone-frame {
+  width: 320px;
+  background: #1c1c1e;
+  border-radius: 52px;
+  padding: 16px 12px 20px;
+  box-shadow: 0 40px 100px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.07), inset 0 0 0 1px rgba(255,255,255,.04);
+  position: relative;
+}
+.iphone-frame .notch {
+  width: 100px; height: 28px; background: #1c1c1e;
+  border-radius: 0 0 18px 18px; margin: 0 auto 10px;
+  position: relative; z-index: 2;
+}
+.iphone-frame .notch::before {
+  content:''; position:absolute; left:50%; top:8px; transform:translateX(-50%);
+  width:10px; height:10px; border-radius:50%; background:#0a0a0a;
+  box-shadow:0 0 0 2px rgba(255,255,255,.05);
+}
+.iphone-screen-outer {
+  background: white; border-radius: 38px; overflow: hidden;
+  height: 580px; position: relative;
+}
+
+/* Screens container */
+.screens-container { width:100%; height:100%; position:relative; overflow:hidden; }
+
+.app-screen {
+  position: absolute; inset:0;
+  display: flex; flex-direction: column;
+  background: white;
+  opacity: 0; pointer-events: none;
+  transform: translateX(100%);
+  transition: opacity .35s ease, transform .35s cubic-bezier(.4,0,.2,1);
+}
+.app-screen.active {
+  opacity: 1; pointer-events: all;
+  transform: translateX(0);
+}
+.app-screen.exit-left {
+  opacity: 0; transform: translateX(-60px);
+}
+
+/* Screen status bar */
+.s-bar { display:flex; justify-content:space-between; align-items:center; padding:10px 18px 4px; background:white; }
+.s-time { font-size:12px; font-weight:700; color:#111; }
+.s-icons { font-size:11px; color:#111; display:flex; gap:2px; }
+
+/* ── Screen 1: Registration ── */
+#s1 .s-body { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; gap:20px; }
+#s1 .logo-area { text-align:center; }
+#s1 .logo-icon { font-size:56px; margin-bottom:8px; }
+#s1 .logo-name { font-family:'Playfair Display',serif; font-size:26px; font-weight:700; color:#111; }
+#s1 .logo-sub { font-size:13px; color:#6b7280; margin-top:4px; line-height:1.5; text-align:center; }
+#s1 .form-box { width:100%; display:flex; flex-direction:column; gap:12px; }
+#s1 .phone-inp-wrap { display:flex; gap:8px; }
+#s1 .code-badge { background:#f3f4f6; border:1px solid #e5e7eb; border-radius:10px; padding:0 12px; font-size:14px; font-weight:600; color:#374151; display:flex; align-items:center; white-space:nowrap; }
+#s1 input {
+  flex:1; border:1.5px solid #e5e7eb; border-radius:12px;
+  padding:12px 14px; font-size:14px; outline:none; font-family:'DM Sans',sans-serif;
+  transition:border-color .2s;
+}
+#s1 input:focus { border-color:var(--g); }
+#s1 .small-note { font-size:11px; color:#9ca3af; text-align:center; }
+
+/* ── Screen 2: Mode select ── */
+#s2 .s-body { flex:1; padding:24px; display:flex; flex-direction:column; gap:20px; }
+#s2 .mode-head { text-align:center; }
+#s2 .mode-head h2 { font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:#111; }
+#s2 .mode-head p { font-size:13px; color:#6b7280; margin-top:4px; }
+.mode-card-big {
+  border:2px solid #e5e7eb; border-radius:18px; padding:20px;
+  cursor:pointer; transition:all .2s; background:white; display:flex; align-items:center; gap:16px;
+}
+.mode-card-big:hover { border-color:var(--g); transform:translateY(-2px); box-shadow:var(--sh2); }
+.mode-card-big.selected { border-color:var(--g); background:var(--g-p); }
+.mode-card-big.selected-b { border-color:var(--b); background:var(--b-p); }
+.mcb-icon { font-size:40px; }
+.mcb-text { flex:1; }
+.mcb-title { font-size:17px; font-weight:700; color:#111; }
+.mcb-sub { font-size:12px; color:#6b7280; margin-top:2px; }
+.mcb-arr { font-size:20px; color:#d1d5db; transition:color .2s; }
+.mode-card-big:hover .mcb-arr { color:var(--g); }
+
+/* ── Shared screen styles ── */
+.screen-topbar { display:flex; align-items:center; gap:10px; padding:12px 16px 6px; border-bottom:1px solid #f3f4f6; }
+.back-btn { width:34px; height:34px; border-radius:10px; background:#f9fafb; border:1px solid #e5e7eb; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:16px; color:#374151; transition:background .2s; flex-shrink:0; }
+.back-btn:hover { background:#f3f4f6; }
+.topbar-title { font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:#111; }
+.topbar-sub { font-size:11px; color:#9ca3af; margin-top:1px; }
+
+.s-scroll { flex:1; overflow-y:auto; padding:14px 16px; display:flex; flex-direction:column; gap:10px; scrollbar-width:thin; }
+.s-scroll::-webkit-scrollbar { width:3px; }
+.s-scroll::-webkit-scrollbar-track { background:transparent; }
+.s-scroll::-webkit-scrollbar-thumb { background:#e5e7eb; border-radius:10px; }
+
+.s-footer { padding:12px 16px 16px; border-top:1px solid #f3f4f6; }
+
+/* Big green/blue buttons */
+.btn-main {
+  width:100%; border:none; border-radius:14px; padding:15px;
+  font-size:15px; font-weight:700; color:white; cursor:pointer;
+  font-family:'DM Sans',sans-serif; letter-spacing:.01em;
+  transition:opacity .15s, transform .15s;
+}
+.btn-main:active { opacity:.85; transform:scale(.98); }
+.btn-main.green { background:linear-gradient(135deg, var(--g), #1a9248); }
+.btn-main.blue { background:linear-gradient(135deg, var(--b), #1d4ed8); }
+
+/* ── Screen 3A: Student Menu ── */
+.time-chips { display:flex; gap:8px; flex-wrap:wrap; }
+.time-chip { padding:6px 12px; border-radius:100px; border:1.5px solid #e5e7eb; font-size:12px; font-weight:500; color:#374151; cursor:pointer; transition:all .2s; }
+.time-chip.active { background:var(--g-p); border-color:var(--g); color:var(--g); font-weight:600; }
+.section-mini-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:#9ca3af; }
+
+.food-card {
+  border:2px solid #f3f4f6; border-radius:14px; padding:12px;
+  display:flex; align-items:center; gap:12px; cursor:pointer;
+  transition:all .2s; background:white;
+}
+.food-card:hover { border-color:#d1fae5; transform:translateX(2px); }
+.food-card.selected { border-color:var(--g); background:var(--g-p); }
+.fc-emoji { font-size:38px; flex-shrink:0; }
+.fc-info { flex:1; }
+.fc-name { font-size:15px; font-weight:600; color:#111; }
+.fc-desc { font-size:12px; color:#9ca3af; margin-top:2px; }
+.fc-price { font-size:14px; font-weight:700; color:var(--g); margin-top:3px; }
+.fc-time { font-size:11px; color:#6b7280; }
+.fc-check { width:22px; height:22px; border-radius:50%; border:2px solid #e5e7eb; display:flex; align-items:center; justify-content:center; font-size:12px; color:transparent; transition:all .2s; flex-shrink:0; }
+.food-card.selected .fc-check { background:var(--g); border-color:var(--g); color:white; }
+
+/* ── Screen 4A: Cart ── */
+.cart-item-row { display:flex; justify-content:space-between; align-items:center; padding:10px 12px; background:#f9fafb; border-radius:10px; border:1px solid #f3f4f6; }
+.cir-left { display:flex; align-items:center; gap:10px; }
+.cir-emoji { font-size:24px; }
+.cir-name { font-size:14px; font-weight:600; color:#111; }
+.cir-qty { font-size:12px; color:#9ca3af; }
+.cir-price { font-size:14px; font-weight:700; color:var(--g); }
+.total-row { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-top:1.5px dashed #e5e7eb; }
+.total-label { font-size:13px; font-weight:600; color:#374151; }
+.total-val { font-size:18px; font-weight:800; color:var(--g); }
+.total-val.blue { color:var(--b); }
+
+.addr-option { display:flex; align-items:center; gap:10px; padding:10px 12px; border:1.5px solid #e5e7eb; border-radius:12px; cursor:pointer; transition:all .2s; }
+.addr-option:hover { border-color:#bbf7d0; }
+.addr-option.selected { border-color:var(--g); background:var(--g-p); }
+.addr-option.selected-b { border-color:var(--b); background:var(--b-p); }
+.ao-icon { font-size:20px; }
+.ao-title { font-size:13px; font-weight:600; color:#111; }
+.ao-sub { font-size:11px; color:#9ca3af; margin-top:1px; }
+.ao-radio { margin-left:auto; width:18px; height:18px; border-radius:50%; border:2px solid #e5e7eb; transition:all .2s; display:flex; align-items:center; justify-content:center; }
+.addr-option.selected .ao-radio { background:var(--g); border-color:var(--g); }
+.addr-option.selected .ao-radio::after { content:''; width:6px; height:6px; border-radius:50%; background:white; }
+.addr-option.selected-b .ao-radio { background:var(--b); border-color:var(--b); }
+.addr-option.selected-b .ao-radio::after { content:''; width:6px; height:6px; border-radius:50%; background:white; }
+
+/* ── Screen 5A / 6B: Success ── */
+.success-screen { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px 24px; gap:16px; background:linear-gradient(160deg, #f0fdf4, #dcfce7); }
+.success-screen.blue { background:linear-gradient(160deg, #eff6ff, #dbeafe); }
+.success-ring { width:88px; height:88px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:44px; color:white; animation: popIn .5s cubic-bezier(.34,1.56,.64,1) forwards; }
+.success-ring.green { background:linear-gradient(135deg,var(--g-l),var(--g)); box-shadow:0 8px 32px rgba(39,174,96,.4); }
+.success-ring.blue { background:linear-gradient(135deg,#60a5fa,var(--b)); box-shadow:0 8px 32px rgba(37,99,235,.4); }
+@keyframes popIn { from{transform:scale(0) rotate(-180deg)} to{transform:scale(1) rotate(0)} }
+.success-title { font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:#111; text-align:center; line-height:1.3; }
+.success-sub { font-size:13px; color:#6b7280; text-align:center; line-height:1.6; }
+.success-badge { background:white; border-radius:10px; padding:8px 20px; font-size:13px; font-weight:700; border:1.5px solid; }
+.success-badge.green { color:var(--g); border-color:var(--g-b); }
+.success-badge.blue { color:var(--b); border-color:var(--b-b); }
+.success-detail { font-size:12px; color:#9ca3af; display:flex; align-items:center; gap:6px; }
+
+/* ── Screen 3B: Survey ── */
+.survey-field { display:flex; flex-direction:column; gap:5px; }
+.sf-label { font-size:12px; font-weight:600; color:#374151; }
+.sf-inp-row { display:flex; gap:8px; }
+.sf-inp { flex:1; border:1.5px solid #e5e7eb; border-radius:10px; padding:10px 12px; font-size:14px; font-family:'DM Sans',sans-serif; outline:none; transition:border-color .2s; color:#111; }
+.sf-inp:focus { border-color:var(--b); }
+select.sf-inp { cursor:pointer; }
+.sf-unit { background:#f3f4f6; border:1.5px solid #e5e7eb; border-radius:10px; padding:10px 12px; font-size:13px; font-weight:600; color:#374151; display:flex; align-items:center; }
+
+/* ── Screen 4B: Weekly Menu ── */
+.day-tabs { display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none; }
+.day-tabs::-webkit-scrollbar { display:none; }
+.day-tab { flex-shrink:0; padding:6px 14px; border-radius:100px; border:1.5px solid #e5e7eb; font-size:12px; font-weight:600; color:#374151; cursor:pointer; transition:all .2s; white-space:nowrap; }
+.day-tab.active { background:var(--b); border-color:var(--b); color:white; }
+.week-food-card {
+  border:2px solid #f3f4f6; border-radius:12px; padding:10px;
+  display:flex; align-items:center; gap:10px; cursor:pointer; transition:all .2s;
+}
+.week-food-card:hover { border-color:#bfdbfe; }
+.week-food-card.selected { border-color:var(--b); background:var(--b-p); }
+.wfc-emoji { font-size:28px; }
+.wfc-info { flex:1; }
+.wfc-name { font-size:14px; font-weight:600; color:#111; }
+.wfc-cal { font-size:12px; color:#6b7280; margin-top:1px; }
+.wfc-check { width:20px; height:20px; border-radius:50%; border:2px solid #e5e7eb; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+.week-food-card.selected .wfc-check { background:var(--b); border-color:var(--b); color:white; font-size:11px; }
+.week-summary { background:var(--b-p); border:1px solid var(--b-b); border-radius:10px; padding:10px 12px; }
+.ws-title { font-size:12px; font-weight:700; color:var(--b); margin-bottom:6px; }
+.ws-row { display:flex; justify-content:space-between; font-size:11px; color:#374151; padding:2px 0; }
+.ws-row strong { color:var(--b); }
+
+/* ── Side panel: Flow progress ── */
+.flow-progress { display:flex; flex-direction:column; gap:0; min-width:180px; }
+.fp-item { display:flex; align-items:flex-start; gap:12px; }
+.fp-line-wrap { display:flex; flex-direction:column; align-items:center; }
+.fp-dot { width:28px; height:28px; border-radius:50%; border:2px solid #374151; display:flex; align-items:center; justify-content:center; font-size:12px; color:#6b7280; flex-shrink:0; transition:all .3s; }
+.fp-dot.done { background:var(--g); border-color:var(--g); color:white; }
+.fp-dot.active { border-color:var(--g); color:var(--g); box-shadow:0 0 0 4px rgba(39,174,96,.2); }
+.fp-dot.done-b { background:var(--b); border-color:var(--b); color:white; }
+.fp-dot.active-b { border-color:var(--b); color:var(--b); box-shadow:0 0 0 4px rgba(37,99,235,.2); }
+.fp-connector { width:2px; height:28px; background:#374151; transition:background .3s; }
+.fp-connector.done { background:var(--g); }
+.fp-connector.done-b { background:var(--b); }
+.fp-text { padding-top:4px; }
+.fp-label { font-size:13px; font-weight:600; color:#9ca3af; transition:color .3s; line-height:1.3; }
+.fp-label.active { color:white; }
+.fp-label.done { color:#4ade80; }
+.fp-label.done-b { color:#60a5fa; }
+.fp-sub { font-size:11px; color:#4b5563; margin-top:1px; }
+
+/* ══════════════════ PART 3: TWO MODES ══════════════════ */
+.modes-section { background:white; padding:96px 32px; border-top:1px solid #e5e7eb; }
+.modes-inner { max-width:1100px; margin:0 auto; }
+.modes-head { text-align:center; margin-bottom:72px; }
+.mode-sec-label { display:inline-block; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--g); background:var(--g-p); border:1px solid var(--g-b); border-radius:100px; padding:4px 14px; margin-bottom:14px; }
+.modes-head h2 { font-family:'Playfair Display',serif; font-size:clamp(22px,3.5vw,42px); font-weight:700; color:#111; letter-spacing:-.02em; line-height:1.1; }
+.modes-head h2 span { color:var(--g); }
+.modes-head p { font-size:15px; color:#6b7280; margin-top:12px; }
+.modes-grid { display:grid; grid-template-columns:1fr 1px 1fr; gap:0; align-items:start; }
+.modes-sep { background:#e5e7eb; align-self:stretch; margin:40px 0; }
+.mode-col2 { padding:32px 48px; display:flex; flex-direction:column; align-items:center; gap:28px; }
+.mode-tag { display:inline-block; font-size:11px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; border-radius:100px; padding:4px 14px; margin-bottom:8px; }
+.mode-tag.g { background:var(--g-p); color:var(--g); border:1px solid var(--g-b); }
+.mode-tag.b { background:var(--b-p); color:var(--b); border:1px solid var(--b-b); }
+.mode-title-lg { font-family:'Playfair Display',serif; font-size:26px; font-weight:700; color:#111; text-align:center; }
+.mode-sub2 { font-size:14px; color:#6b7280; text-align:center; }
+
+/* static large phone */
+.iphone-static { width:200px; background:#1a1a1a; border-radius:38px; padding:12px 8px 14px; box-shadow:0 24px 70px rgba(0,0,0,.16); transition:transform .35s cubic-bezier(.34,1.56,.64,1); }
+.iphone-static:hover { transform:translateY(-10px) scale(1.02); }
+.is-notch { width:52px; height:9px; background:#111; border-radius:5px; margin:0 auto 9px; }
+.is-screen { background:white; border-radius:26px; overflow:hidden; min-height:290px; display:flex; flex-direction:column; }
+.is-status { display:flex; justify-content:space-between; padding:5px 10px; font-size:7px; font-weight:700; }
+.is-body { flex:1; padding:9px 8px; display:flex; flex-direction:column; gap:5px; background:#fafafa; }
+
+/* QR big */
+.is-qr-frame { display:flex; flex-direction:column; align-items:center; gap:5px; padding:4px; background:white; border-radius:8px; }
+.is-qr-box { width:64px; height:64px; background:#111; border-radius:6px; padding:6px; display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
+.qb { background:white; border-radius:1px; }
+.qb.d { background:#111; }
+.is-qr-label { font-size:8px; font-weight:700; color:#111; }
+.is-qr-sub { font-size:6.5px; color:#9ca3af; text-align:center; }
+
+/* Nutrition ring */
+.is-nut { display:flex; flex-direction:column; gap:5px; }
+.is-nut-header { display:flex; align-items:center; gap:7px; }
+.is-ring { width:46px; height:46px; flex-shrink:0; }
+.is-nut-vals .iv { font-size:11px; font-weight:800; color:#111; }
+.is-nut-vals .il { font-size:6.5px; color:#9ca3af; }
+.is-nut-vals .io { font-size:6.5px; color:var(--g); font-weight:600; margin-top:1px; }
+.is-macro { display:flex; flex-direction:column; gap:3.5px; }
+.is-macro-row { display:flex; align-items:center; gap:4px; }
+.imr-name { font-size:6px; color:#9ca3af; width:28px; }
+.imr-bar { flex:1; height:4px; background:#e5e7eb; border-radius:2px; overflow:hidden; }
+.imr-fill { height:100%; border-radius:2px; }
+.f-pr { background:#3b82f6; width:65%; }
+.f-ca { background:#f59e0b; width:78%; }
+.f-fa { background:#ef4444; width:42%; }
+.imr-val { font-size:6px; font-weight:600; color:#111; width:16px; text-align:right; }
+
+.mode-bullets2 { list-style:none; display:flex; flex-direction:column; gap:11px; width:100%; max-width:270px; }
+.mode-bullets2 li { display:flex; align-items:flex-start; gap:10px; font-size:14px; color:#374151; line-height:1.5; }
+.mb-icon { width:28px; height:28px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; margin-top:1px; }
+.mb-icon.g { background:var(--g-p); }
+.mb-icon.b { background:var(--b-p); }
+
+/* ══════════════════ FOOTER ══════════════════ */
+.footer { background:#f9fafb; border-top:1px solid #e5e7eb; padding:36px 32px; text-align:center; }
+.footer-brand { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:#111; margin-bottom:6px; }
+.footer-brand span { color:var(--g); }
+.footer p { font-size:13px; color:#9ca3af; }
+
+/* ══════════════════ FADE IN ══════════════════ */
+.fade-in { opacity:0; transform:translateY(18px); transition:opacity .55s ease, transform .55s ease; }
+.fade-in.visible { opacity:1; transform:translateY(0); }
+
+/* ══════════════════ RESPONSIVE ══════════════════ */
+@media (max-width:1024px) {
+  .branch-row { flex-direction:column; gap:48px; align-items:center; }
+  .branch-row::before { display:none; }
+  .branch-col::before { display:none; }
+  .branch-phones { flex-wrap:wrap; gap:10px; justify-content:center; }
+  .harrow { display:none; }
+  .demo-stage { flex-direction:column; align-items:center; }
+  .flow-progress { flex-direction:row; flex-wrap:wrap; gap:8px; justify-content:center; min-width:unset; }
+  .fp-item { flex-direction:column; align-items:center; gap:4px; }
+  .fp-line-wrap { flex-direction:row; }
+  .fp-connector { width:24px; height:2px; }
+  .modes-grid { grid-template-columns:1fr; }
+  .modes-sep { height:1px; width:80%; margin:0 auto; align-self:auto; }
+  .mode-col2 { padding:32px 24px; }
+}
+@media (max-width:480px) {
+  .iphone-frame { width:280px; }
+  .iphone-screen-outer { height:520px; }
+  .hero { padding:48px 16px 56px; }
+  .demo-section { padding:64px 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════
+     PART 1: FLOW DIAGRAM
+══════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-top fade-in">
+      <div class="hero-pill"><span class="hero-dot"></span> Mobil Ilova · Foydalanuvchi Oqimi</div>
+      <h1>MealTime: <em>Umumiy Foydalanuvchi Oqimi</em><br>(Talaba va Xodim)</h1>
+      <p class="hero-sub">Ro'yxatdan o'tishdan buyurtmaga qadar — ikkala foydalanuvchi rejimini kuzating</p>
+    </div>
+
+    <div class="diagram fade-in" style="transition-delay:.1s">
+
+      <!-- START ROW -->
+      <div class="diag-start">
+
+        <!-- Step 1 -->
+        <div class="diag-unit">
+          <div class="diag-num">1</div>
+          <div class="dp">
+            <div class="dp-notch"></div>
+            <div class="dp-screen">
+              <div class="dp-status"><span>9:41</span><span>▊🔋</span></div>
+              <div class="dp-body">
+                <div class="dp-appbar"><div class="an">🍽 MealTime</div><div class="as">Xush kelibsiz!</div></div>
+                <div class="dp-inp"><span>📱</span><span>+998 __ ___ __ __</span></div>
+                <div class="dp-btn g">SMS kodni olish</div>
+                <div class="dp-inp"><span>🔢</span><span>Tasdiqlash kodi</span></div>
+                <div class="dp-btn go">Kirish</div>
+              </div>
+            </div>
+          </div>
+          <div class="diag-cap">Boshlash:<br>Ro'yxatdan O'tish</div>
+        </div>
+
+        <!-- Arrow -->
+        <div class="harrow">
+          <svg width="56" height="20" viewBox="0 0 56 20">
+            <defs><marker id="d1" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0 0L7 3L0 6Z" fill="#27ae60"/></marker></defs>
+            <path d="M4 10Q28 3 52 10" stroke="#27ae60" stroke-width="2" fill="none" marker-end="url(#d1)" stroke-dasharray="4 3"/>
+          </svg>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="diag-unit">
+          <div class="diag-num">2</div>
+          <div class="dp">
+            <div class="dp-notch"></div>
+            <div class="dp-screen">
+              <div class="dp-status"><span>9:41</span><span>▊</span></div>
+              <div class="dp-body">
+                <div style="font-size:8px;font-weight:700;color:#111;text-align:center;">Rejimni Tanlang</div>
+                <div class="dp-mode-card act"><div class="mi">🎓</div><div><div class="mt">Talaba Rejimi</div><div class="ms">Tezkor &amp; Oddiy</div></div><div class="mc g">✓</div></div>
+                <div class="dp-mode-card act-b"><div class="mi">💼</div><div><div class="mt">Xodim Rejimi</div><div class="ms">Haftalik &amp; Pro</div></div><div class="mc b">✓</div></div>
+                <div class="dp-btn g" style="margin-top:3px;">Davom etish →</div>
+              </div>
+            </div>
+          </div>
+          <div class="diag-cap">Rejimni<br>Tanlang</div>
+        </div>
+
+      </div><!-- /diag-start -->
+
+      <!-- Branch stem -->
+      <div class="vstem"></div>
+
+      <!-- Branch row -->
+      <div class="branch-row">
+
+        <!-- STUDENT BRANCH -->
+        <div class="branch-col gc">
+          <div class="branch-pill g fade-in"><h3>🎓 Talaba Oqimi</h3><p>Tezkor &amp; Oddiy</p></div>
+          <div class="branch-phones">
+
+            <div class="diag-unit">
+              <div class="diag-num" style="font-size:9px;">A</div>
+              <div class="dp"><div class="dp-notch"></div><div class="dp-screen"><div class="dp-status"><span>9:42</span><span>▊</span></div><div class="dp-body">
+                <div style="font-size:7.5px;font-weight:700;color:#111;border-bottom:1px solid #f3f4f6;padding-bottom:3px;">🕐 Menyu</div>
+                <div class="dp-food"><div class="fe">🍜</div><div><div class="fn">Lag'mon</div><div class="fp">12 000 so'm</div></div><div class="ft">Tez</div></div>
+                <div class="dp-food"><div class="fe">🥗</div><div><div class="fn">Salat</div><div class="fp">8 000 so'm</div></div><div class="ft">Yangi</div></div>
+                <div class="dp-food"><div class="fe">🍛</div><div><div class="fn">Palov</div><div class="fp">15 000 so'm</div></div><div class="ft">⭐</div></div>
+              </div></div></div>
+              <div class="diag-cap">Menyu<br>(Vaqt va Taom)</div>
+            </div>
+
+            <div class="harrow"><svg width="44" height="16" viewBox="0 0 44 16"><defs><marker id="ds1" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0L6 3L0 6Z" fill="#27ae60"/></marker></defs><line x1="3" y1="8" x2="38" y2="8" stroke="#27ae60" stroke-width="1.5" stroke-dasharray="3 3" marker-end="url(#ds1)"/></svg></div>
+
+            <div class="diag-unit">
+              <div class="diag-num" style="font-size:9px;">B</div>
+              <div class="dp"><div class="dp-notch"></div><div class="dp-screen"><div class="dp-status"><span>9:43</span><span>▊</span></div><div class="dp-body">
+                <div style="font-size:7px;font-weight:700;color:#111;">🛒 Savatingiz</div>
+                <div class="dp-cart-item"><div class="dp-ci-dot"></div><div class="dp-ci-name">Lag'mon × 1</div><div class="dp-ci-price">12 000</div></div>
+                <div class="dp-cart-item"><div class="dp-ci-dot"></div><div class="dp-ci-name">Salat × 1</div><div class="dp-ci-price">8 000</div></div>
+                <div style="display:flex;justify-content:space-between;padding:2px 0;border-top:1px dashed #e5e7eb;font-size:6.5px;font-weight:700;"><span>Jami</span><span style="color:var(--g)">20 000</span></div>
+                <div class="dp-addr"><div class="ai">📍</div><div><div class="at">TDU, 3-bino</div><div class="asub">Asosiy oshxona</div></div></div>
+                <div class="dp-btn g">Tasdiqlash ✓</div>
+              </div></div></div>
+              <div class="diag-cap">Savatingiz<br>(OTM Manzil)</div>
+            </div>
+
+            <div class="harrow"><svg width="44" height="16" viewBox="0 0 44 16"><defs><marker id="ds2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0L6 3L0 6Z" fill="#27ae60"/></marker></defs><line x1="3" y1="8" x2="38" y2="8" stroke="#27ae60" stroke-width="1.5" stroke-dasharray="3 3" marker-end="url(#ds2)"/></svg></div>
+
+            <div class="diag-unit">
+              <div class="diag-num" style="font-size:9px;">C</div>
+              <div class="dp"><div class="dp-notch"></div><div class="dp-screen"><div class="dp-status"><span>9:44</span><span>▊</span></div><div class="dp-body" style="justify-content:center;">
+                <div class="dp-success"><div class="sc">✓</div><div class="st">Buyurtma Qabul!</div><div class="ss">15–20 daqiqada<br>tayyor</div><div class="sid">#MT-2847</div></div>
+              </div></div></div>
+              <div class="diag-cap">Buyurtma Qabul<br>Qilindi</div>
+            </div>
+
+          </div>
+        </div><!-- /student -->
+
+        <!-- EMPLOYEE BRANCH -->
+        <div class="branch-col bc" style="margin-top:40px;">
+          <div class="branch-pill b fade-in" style="transition-delay:.1s"><h3>💼 Xodim Oqimi</h3><p>Shaxsiy &amp; Haftalik</p></div>
+          <div class="branch-phones">
+
+            <div class="diag-unit">
+              <div class="diag-num b" style="font-size:9px;">A</div>
+              <div class="dp"><div class="dp-notch"></div><div class="dp-screen"><div class="dp-status"><span>9:42</span><span>▊</span></div><div class="dp-body">
+                <div style="font-size:7px;font-weight:700;color:#111;">📋 So'rovnoma</div>
+                <div class="dp-survey">
+                  <div class="dp-srow"><div class="sl">Yosh</div><div class="sv">28 yosh</div></div>
+                  <div class="dp-srow"><div class="sl">Vazn</div><div class="sv">74 kg</div></div>
+                  <div class="dp-srow"><div class="sl">Bo'y</div><div class="sv">178 sm</div></div>
+                  <div class="dp-srow"><div class="sl">Maqsad</div><div class="sv">Sog'lik</div></div>
+                </div>
+                <div class="dp-btn b">Davom →</div>
+              </div></div></div>
+              <div class="diag-cap">So'rovnoma<br>(Shaxsiylashtirish)</div>
+            </div>
+
+            <div class="harrow"><svg width="44" height="16" viewBox="0 0 44 16"><defs><marker id="de1" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0L6 3L0 6Z" fill="#2563eb"/></marker></defs><line x1="3" y1="8" x2="38" y2="8" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="3 3" marker-end="url(#de1)"/></svg></div>
+
+            <div class="diag-unit">
+              <div class="diag-num b" style="font-size:9px;">B</div>
+              <div class="dp"><div class="dp-notch"></div><div class="dp-screen"><div class="dp-status"><span>9:43</span><span>▊</span></div><div class="dp-body">
+                <div class="dp-week">
+                  <div class="dp-wt">📅 Haftalik Menyu</div>
+                  <div class="dp-wr"><div class="wd">Du</div><div class="wf">🥗 Salat</div><div class="wk">380</div></div>
+                  <div class="dp-wr"><div class="wd">Se</div><div class="wf">🍗 Shurva</div><div class="wk">420</div></div>
+                  <div class="dp-wr"><div class="wd">Ch</div><div class="wf">🥩 Grill Et</div><div class="wk">510</div></div>
+                  <div class="dp-wr"><div class="wd">Pa</div><div class="wf">🍱 Qovurma</div><div class="wk">445</div></div>
+                </div>
+              </div></div></div>
+              <div class="diag-cap">Haftalik Menyu<br>(Konstruktor)</div>
+            </div>
+
+            <div class="harrow"><svg width="44" height="16" viewBox="0 0 44 16"><defs><marker id="de2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0L6 3L0 6Z" fill="#2563eb"/></marker></defs><line x1="3" y1="8" x2="38" y2="8" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="3 3" marker-end="url(#de2)"/></svg></div>
+
+            <div class="diag-unit">
+              <div class="diag-num b" style="font-size:9px;">C</div>
+              <div class="dp"><div class="dp-notch"></div><div class="dp-screen"><div class="dp-status"><span>9:44</span><span>▊</span></div><div class="dp-body">
+                <div style="font-size:7px;font-weight:700;color:#111;">📦 7 Kunlik Savatcha</div>
+                <div class="dp-cart-item"><div class="dp-ci-dot b"></div><div class="dp-ci-name">5 × Tushlik</div><div class="dp-ci-price">125k</div></div>
+                <div class="dp-cart-item"><div class="dp-ci-dot b"></div><div class="dp-ci-name">5 × Snack</div><div class="dp-ci-price">35k</div></div>
+                <div class="dp-addr b"><div class="ai">🏢</div><div><div class="at">Texnopark, 5-qavat</div><div class="asub">Korporativ</div></div></div>
+                <div class="dp-btn b">Tasdiqlash ✓</div>
+              </div></div></div>
+              <div class="diag-cap">Savatingiz<br>(Korporativ &amp; 7 kunlik)</div>
+            </div>
+
+            <div class="harrow"><svg width="44" height="16" viewBox="0 0 44 16"><defs><marker id="de3" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0L6 3L0 6Z" fill="#2563eb"/></marker></defs><line x1="3" y1="8" x2="38" y2="8" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="3 3" marker-end="url(#de3)"/></svg></div>
+
+            <div class="diag-unit">
+              <div class="diag-num b" style="font-size:9px;">D</div>
+              <div class="dp"><div class="dp-notch"></div><div class="dp-screen"><div class="dp-status"><span>9:45</span><span>▊</span></div><div class="dp-body" style="justify-content:center;">
+                <div class="dp-success b"><div class="sc b">✓</div><div class="st">Haftalik Qabul!</div><div class="ss">Rejim faollashdi</div><div class="sid b">#WK-0531</div></div>
+              </div></div></div>
+              <div class="diag-cap">Buyurtma Qabul<br>Qilindi</div>
+            </div>
+
+          </div>
+        </div><!-- /employee -->
+
+      </div><!-- /branch-row -->
+    </div><!-- /diagram -->
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     PART 2: INTERACTIVE DEMO
+══════════════════════════════════════════════════════════ -->
+<section class="demo-section" id="demo">
+  <div class="demo-inner">
+    <div class="demo-header fade-in">
+      <div class="demo-label">Interaktiv Demo</div>
+      <h2>Ilovani o'zingiz <span>sinab ko'ring</span></h2>
+      <p>Quyidagi telefonda tugmalarni bosing va haqiqiy ilova oqimini boshdan kechiring</p>
+    </div>
+
+    <div class="demo-stage">
+
+      <!-- FLOW PROGRESS sidebar -->
+      <div class="flow-progress" id="flowProgress">
+        <!-- filled by JS -->
+      </div>
+
+      <!-- BIG INTERACTIVE PHONE -->
+      <div class="phone-mockup-wrap fade-in" style="transition-delay:.15s">
+        <div class="iphone-frame">
+          <div class="notch"></div>
+          <div class="iphone-screen-outer">
+            <div class="screens-container" id="screensContainer">
+
+              <!-- ══ SCREEN 1: REGISTRATION ══ -->
+              <div class="app-screen active" id="s1">
+                <div class="s-bar"><span class="s-time">9:41</span><div class="s-icons"><span>▲▲</span><span>▊</span><span>🔋</span></div></div>
+                <div class="s-body">
+                  <div class="logo-area">
+                    <div class="logo-icon">🍽</div>
+                    <div class="logo-name">MealTime</div>
+                    <div class="logo-sub">Buyurtmangizni navbatsiz<br>sotib olishni boshlang</div>
+                  </div>
+                  <div class="form-box">
+                    <div>
+                      <div style="font-size:12px;color:#9ca3af;margin-bottom:6px;font-weight:500;">Telefon raqamingiz</div>
+                      <div class="phone-inp-wrap">
+                        <div class="code-badge">🇺🇿 +998</div>
+                        <input type="tel" placeholder="__ ___ __ __" id="phoneInput" maxlength="12">
+                      </div>
+                    </div>
+                    <button class="btn-main green" id="smsBtn">SMS kodni olish →</button>
+                    <div class="small-note">Birinchi marta ro'yxatdan o'tmoqdamisiz?<br>SMS orqali tasdiqlang</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ══ SCREEN 2: MODE SELECT ══ -->
+              <div class="app-screen" id="s2">
+                <div class="s-bar"><span class="s-time">9:41</span><div class="s-icons"><span>▲▲</span><span>▊</span></div></div>
+                <div class="screen-topbar">
+                  <div class="back-btn" onclick="goTo('s1')">←</div>
+                  <div><div class="topbar-title">Rejimni Tanlang</div><div class="topbar-sub">Qaysi rejim sizga mos?</div></div>
+                </div>
+                <div class="s-scroll" style="justify-content:center;padding-top:32px;">
+                  <div class="mode-head" style="text-align:center;margin-bottom:28px;">
+                    <div style="font-size:38px;">👋</div>
+                    <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#111;margin-top:8px;">Xush kelibsiz!</div>
+                    <div style="font-size:13px;color:#6b7280;margin-top:4px;">Foydalanish rejimingizni tanlang</div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:12px;">
+                    <div class="mode-card-big" id="studentCard" onclick="goStudentFlow()">
+                      <div class="mcb-icon">🎓</div>
+                      <div class="mcb-text">
+                        <div class="mcb-title">Talaba Rejimi</div>
+                        <div class="mcb-sub">Student Mode — Tezkor &amp; Oddiy</div>
+                      </div>
+                      <div class="mcb-arr">→</div>
+                    </div>
+                    <div class="mode-card-big" id="proCard" onclick="goProFlow()">
+                      <div class="mcb-icon">💼</div>
+                      <div class="mcb-text">
+                        <div class="mcb-title">Xodim Rejimi</div>
+                        <div class="mcb-sub">Pro Mode — Haftalik &amp; Analitika</div>
+                      </div>
+                      <div class="mcb-arr">→</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ══════════ STUDENT FLOW ══════════ -->
+
+              <!-- SCREEN 3A: MENU -->
+              <div class="app-screen" id="s3a">
+                <div class="s-bar"><span class="s-time">9:42</span><div class="s-icons"><span>▊</span></div></div>
+                <div class="screen-topbar">
+                  <div class="back-btn" onclick="goTo('s2')">←</div>
+                  <div><div class="topbar-title">Menyu</div><div class="topbar-sub">(Vaqt va Taom)</div></div>
+                  <div style="margin-left:auto;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600;color:#27ae60;">12:00–14:00</div>
+                </div>
+                <div class="s-scroll">
+                  <div class="time-chips">
+                    <div class="time-chip active">Tushlik</div>
+                    <div class="time-chip" onclick="this.parentNode.querySelectorAll('.time-chip').forEach(c=>c.classList.remove('active'));this.classList.add('active')">Kechki</div>
+                    <div class="time-chip" onclick="this.parentNode.querySelectorAll('.time-chip').forEach(c=>c.classList.remove('active'));this.classList.add('active')">Snack</div>
+                  </div>
+                  <div class="section-mini-title" style="margin-top:4px;">Tavsiya etilganlar</div>
+                  <div class="food-card" id="fc1" onclick="selectFood('fc1')">
+                    <div class="fc-emoji">🍜</div>
+                    <div class="fc-info">
+                      <div class="fc-name">Lag'mon</div>
+                      <div class="fc-desc">O'zbekcha an'anaviy</div>
+                      <div class="fc-price">12 000 so'm</div>
+                      <div class="fc-time">⏱ 12:00–13:30</div>
+                    </div>
+                    <div class="fc-check" id="fc1-check">✓</div>
+                  </div>
+                  <div class="food-card" id="fc2" onclick="selectFood('fc2')">
+                    <div class="fc-emoji">🥗</div>
+                    <div class="fc-info">
+                      <div class="fc-name">Tuna Salat</div>
+                      <div class="fc-desc">Yengil va foydali</div>
+                      <div class="fc-price">8 500 so'm</div>
+                      <div class="fc-time">⏱ 12:00–14:00</div>
+                    </div>
+                    <div class="fc-check" id="fc2-check">✓</div>
+                  </div>
+                  <div class="food-card" id="fc3" onclick="selectFood('fc3')">
+                    <div class="fc-emoji">🍛</div>
+                    <div class="fc-info">
+                      <div class="fc-name">Palov</div>
+                      <div class="fc-desc">Klassik o'zbek taomi</div>
+                      <div class="fc-price">15 000 so'm</div>
+                      <div class="fc-time">⏱ 12:30–14:00</div>
+                    </div>
+                    <div class="fc-check" id="fc3-check">✓</div>
+                  </div>
+                  <div class="food-card" id="fc4" onclick="selectFood('fc4')">
+                    <div class="fc-emoji">🍗</div>
+                    <div class="fc-info">
+                      <div class="fc-name">Tovuq Shurva</div>
+                      <div class="fc-desc">Issiq va to'yimli</div>
+                      <div class="fc-price">11 000 so'm</div>
+                      <div class="fc-time">⏱ 12:00–13:00</div>
+                    </div>
+                    <div class="fc-check" id="fc4-check">✓</div>
+                  </div>
+                </div>
+                <div class="s-footer">
+                  <button class="btn-main green" id="menuContinueBtn" onclick="goTo('s4a')" disabled style="opacity:.5">
+                    Savatga qo'shish →
+                  </button>
+                </div>
+              </div>
+
+              <!-- SCREEN 4A: CART (student) -->
+              <div class="app-screen" id="s4a">
+                <div class="s-bar"><span class="s-time">9:43</span><div class="s-icons"><span>▊</span></div></div>
+                <div class="screen-topbar">
+                  <div class="back-btn" onclick="goTo('s3a')">←</div>
+                  <div><div class="topbar-title">Savatingiz</div><div class="topbar-sub">Buyurtmani tekshiring</div></div>
+                </div>
+                <div class="s-scroll">
+                  <div class="section-mini-title">Tanlangan taom</div>
+                  <div class="cart-item-row" id="cartItemDisplay">
+                    <div class="cir-left"><span class="cir-emoji" id="cartEmoji">🍜</span><div><div class="cir-name" id="cartName">Lag'mon</div><div class="cir-qty">× 1 porsiya</div></div></div>
+                    <div class="cir-price" id="cartPrice">12 000 so'm</div>
+                  </div>
+                  <div class="total-row"><div class="total-label">Jami to'lov:</div><div class="total-val" id="totalDisplay">12 000 so'm</div></div>
+                  <div class="section-mini-title" style="margin-top:4px;">Yetkazib berish manzili</div>
+                  <div class="addr-option selected" id="addr1" onclick="selectAddr('addr1')">
+                    <div class="ao-icon">🏫</div>
+                    <div><div class="ao-title">Talabalar turar joyi</div><div class="ao-sub">TDTU, 2-yotoqxona</div></div>
+                    <div class="ao-radio"></div>
+                  </div>
+                  <div class="addr-option" id="addr2" onclick="selectAddr('addr2')">
+                    <div class="ao-icon">🏛</div>
+                    <div><div class="ao-title">O'quv binosi</div><div class="ao-sub">Asosiy corpus, 3-qavat</div></div>
+                    <div class="ao-radio"></div>
+                  </div>
+                  <div class="addr-option" id="addr3" onclick="selectAddr('addr3')">
+                    <div class="ao-icon">📍</div>
+                    <div><div class="ao-title">Boshqa manzil</div><div class="ao-sub">O'zingiz belgilang</div></div>
+                    <div class="ao-radio"></div>
+                  </div>
+                  <div style="background:#fef9c3;border:1px solid #fde68a;border-radius:10px;padding:10px 12px;font-size:12px;color:#78350f;display:flex;gap:8px;align-items:flex-start;">
+                    <span>⏱</span><span>Taxminiy yetkazish vaqti: <strong>15–25 daqiqa</strong></span>
+                  </div>
+                </div>
+                <div class="s-footer">
+                  <button class="btn-main green" onclick="goTo('s5a')">Buyurtmani Tasdiqlash ✓</button>
+                </div>
+              </div>
+
+              <!-- SCREEN 5A: SUCCESS (student) -->
+              <div class="app-screen" id="s5a">
+                <div class="s-bar"><span class="s-time">9:44</span><div class="s-icons"><span>▊</span></div></div>
+                <div class="success-screen">
+                  <div class="success-ring green" id="sring1">✓</div>
+                  <div class="success-title">Buyurtmangiz muvaffaqiyatli<br>qabul qilindi!</div>
+                  <div class="success-badge green">#MT-2847</div>
+                  <div class="success-sub">Taxminiy vaqt: <strong>15–25 daqiqa</strong><br>Manzil: Talabalar turar joyi</div>
+                  <div class="success-detail">📱 Buyurtma holati SMS orqali yuboriladi</div>
+                  <button class="btn-main green" style="width:220px;margin-top:8px;" onclick="resetToHome()">OK — Bosh sahifaga</button>
+                </div>
+              </div>
+
+              <!-- ══════════ PRO / EMPLOYEE FLOW ══════════ -->
+
+              <!-- SCREEN 3B: SURVEY -->
+              <div class="app-screen" id="s3b">
+                <div class="s-bar"><span class="s-time">9:42</span><div class="s-icons"><span>▊</span></div></div>
+                <div class="screen-topbar">
+                  <div class="back-btn" onclick="goTo('s2')">←</div>
+                  <div><div class="topbar-title">So'rovnoma</div><div class="topbar-sub">(Shaxsiylashtirish)</div></div>
+                  <div style="margin-left:auto;font-size:11px;color:#2563eb;font-weight:600;">1 / 3</div>
+                </div>
+                <div class="s-scroll">
+                  <div style="background:var(--b-p);border:1px solid var(--b-b);border-radius:10px;padding:10px 12px;font-size:12px;color:#1d4ed8;">
+                    🤖 AI ratsioningizni hisoblash uchun bir necha savolga javob bering
+                  </div>
+                  <div class="survey-field">
+                    <div class="sf-label">Yoshingiz</div>
+                    <div class="sf-inp-row">
+                      <input type="number" class="sf-inp" placeholder="28" min="16" max="70" value="28">
+                      <div class="sf-unit">yosh</div>
+                    </div>
+                  </div>
+                  <div class="survey-field">
+                    <div class="sf-label">Vazningiz</div>
+                    <div class="sf-inp-row">
+                      <input type="number" class="sf-inp" placeholder="74" min="40" max="200" value="74">
+                      <div class="sf-unit">kg</div>
+                    </div>
+                  </div>
+                  <div class="survey-field">
+                    <div class="sf-label">Bo'yingiz</div>
+                    <div class="sf-inp-row">
+                      <input type="number" class="sf-inp" placeholder="178" min="140" max="220" value="178">
+                      <div class="sf-unit">sm</div>
+                    </div>
+                  </div>
+                  <div class="survey-field">
+                    <div class="sf-label">Jismoniy faollik darajasi</div>
+                    <select class="sf-inp">
+                      <option>Past (sedentary)</option>
+                      <option selected>O'rtacha (moderately active)</option>
+                      <option>Yuqori (very active)</option>
+                    </select>
+                  </div>
+                  <div class="survey-field">
+                    <div class="sf-label">Maqsadingiz</div>
+                    <select class="sf-inp">
+                      <option>Vazn yo'qotish</option>
+                      <option selected>Sog'lom turmush</option>
+                      <option>Massa oshirish</option>
+                      <option>Sport natijalari</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="s-footer">
+                  <button class="btn-main blue" onclick="goTo('s4b')">Davom etish →</button>
+                </div>
+              </div>
+
+              <!-- SCREEN 4B: WEEKLY MENU -->
+              <div class="app-screen" id="s4b">
+                <div class="s-bar"><span class="s-time">9:43</span><div class="s-icons"><span>▊</span></div></div>
+                <div class="screen-topbar">
+                  <div class="back-btn" onclick="goTo('s3b')">←</div>
+                  <div><div class="topbar-title">Haftalik Menu</div><div class="topbar-sub">Kun uchun ovqat tanlang</div></div>
+                  <div style="margin-left:auto;font-size:11px;color:#2563eb;font-weight:600;">2 / 3</div>
+                </div>
+                <div class="s-scroll">
+                  <div class="day-tabs" id="dayTabs">
+                    <div class="day-tab active" onclick="switchDay(this,'mon')">Dushanba</div>
+                    <div class="day-tab" onclick="switchDay(this,'tue')">Seshanba</div>
+                    <div class="day-tab" onclick="switchDay(this,'wed')">Chorshanba</div>
+                    <div class="day-tab" onclick="switchDay(this,'thu')">Payshanba</div>
+                    <div class="day-tab" onclick="switchDay(this,'fri')">Juma</div>
+                  </div>
+                  <div class="week-food-card" id="wfc1" onclick="selectWeekFood('wfc1')">
+                    <div class="wfc-emoji">🥗</div>
+                    <div class="wfc-info"><div class="wfc-name">Tuna Salat</div><div class="wfc-cal">380 kcal · Oqsil: 32g · Yog': 12g</div></div>
+                    <div class="wfc-check" id="wfc1-ch">✓</div>
+                  </div>
+                  <div class="week-food-card" id="wfc2" onclick="selectWeekFood('wfc2')">
+                    <div class="wfc-emoji">🍗</div>
+                    <div class="wfc-info"><div class="wfc-name">Tovuq Shurva</div><div class="wfc-cal">420 kcal · Oqsil: 38g · Uglevod: 28g</div></div>
+                    <div class="wfc-check" id="wfc2-ch">✓</div>
+                  </div>
+                  <div class="week-food-card" id="wfc3" onclick="selectWeekFood('wfc3')">
+                    <div class="wfc-emoji">🥩</div>
+                    <div class="wfc-info"><div class="wfc-name">Grill Et</div><div class="wfc-cal">510 kcal · Oqsil: 45g · Yog': 22g</div></div>
+                    <div class="wfc-check" id="wfc3-ch">✓</div>
+                  </div>
+                  <div class="week-food-card" id="wfc4" onclick="selectWeekFood('wfc4')">
+                    <div class="wfc-emoji">🍱</div>
+                    <div class="wfc-info"><div class="wfc-name">Qovurma</div><div class="wfc-cal">445 kcal · Oqsil: 28g · Uglevod: 40g</div></div>
+                    <div class="wfc-check" id="wfc4-ch">✓</div>
+                  </div>
+                  <div class="week-summary">
+                    <div class="ws-title">📊 Haftalik umumiy</div>
+                    <div class="ws-row"><span>Jami kaloriya:</span><strong id="weekKcal">0 kcal / hafta</strong></div>
+                    <div class="ws-row"><span>Tanlangan kunlar:</span><strong id="weekCount">0 / 5</strong></div>
+                  </div>
+                </div>
+                <div class="s-footer">
+                  <button class="btn-main blue" id="weekContinueBtn" onclick="goTo('s5b')" disabled style="opacity:.5">Savatga qo'shish →</button>
+                </div>
+              </div>
+
+              <!-- SCREEN 5B: CART (pro) -->
+              <div class="app-screen" id="s5b">
+                <div class="s-bar"><span class="s-time">9:44</span><div class="s-icons"><span>▊</span></div></div>
+                <div class="screen-topbar">
+                  <div class="back-btn" onclick="goTo('s4b')">←</div>
+                  <div><div class="topbar-title">Savatingiz</div><div class="topbar-sub">Korporativ &amp; 7 kunlik</div></div>
+                  <div style="margin-left:auto;font-size:11px;color:#2563eb;font-weight:600;">3 / 3</div>
+                </div>
+                <div class="s-scroll">
+                  <div class="section-mini-title">7 Kunlik reja xulosa</div>
+                  <div class="cart-item-row">
+                    <div class="cir-left"><span class="cir-emoji">📅</span><div><div class="cir-name">5 kun × Tushlik</div><div class="cir-qty">AI tanlagan ratsion</div></div></div>
+                    <div class="cir-price" style="color:var(--b)">125 000</div>
+                  </div>
+                  <div class="cart-item-row">
+                    <div class="cir-left"><span class="cir-emoji">☕</span><div><div class="cir-name">5 kun × Snack</div><div class="cir-qty">Sog'lom o'rtacha nahar</div></div></div>
+                    <div class="cir-price" style="color:var(--b)">35 000</div>
+                  </div>
+                  <div class="total-row" style="border-top-color:#bfdbfe;">
+                    <div class="total-label">Haftalik jami:</div>
+                    <div class="total-val blue">160 000 so'm</div>
+                  </div>
+                  <div class="section-mini-title" style="margin-top:4px;">Yetkazish manzili</div>
+                  <div class="addr-option selected-b" id="corp1" onclick="selectCorpAddr('corp1')">
+                    <div class="ao-icon">🏢</div>
+                    <div><div class="ao-title">Texnopark, 5-qavat</div><div class="ao-sub">Korporativ oshxona · 12:00–13:00</div></div>
+                    <div class="ao-radio"></div>
+                  </div>
+                  <div class="addr-option" id="corp2" onclick="selectCorpAddr('corp2')">
+                    <div class="ao-icon">🏬</div>
+                    <div><div class="ao-title">IT-Park, B blok</div><div class="ao-sub">Yig'ilish xonasi · 12:30</div></div>
+                    <div class="ao-radio"></div>
+                  </div>
+                  <div class="addr-option" id="corp3" onclick="selectCorpAddr('corp3')">
+                    <div class="ao-icon">📍</div>
+                    <div><div class="ao-title">Boshqa korporativ manzil</div><div class="ao-sub">O'zingiz kiriting</div></div>
+                    <div class="ao-radio"></div>
+                  </div>
+                  <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:10px 12px;font-size:12px;color:#166534;display:flex;gap:8px;">
+                    <span>🚚</span><span>Har kuni <strong>12:00–13:00</strong> oralig'ida yetkazib beriladi</span>
+                  </div>
+                </div>
+                <div class="s-footer">
+                  <button class="btn-main blue" onclick="goTo('s6b')">Buyurtmani Tasdiqlash ✓</button>
+                </div>
+              </div>
+
+              <!-- SCREEN 6B: SUCCESS (pro) -->
+              <div class="app-screen" id="s6b">
+                <div class="s-bar"><span class="s-time">9:45</span><div class="s-icons"><span>▊</span></div></div>
+                <div class="success-screen blue">
+                  <div class="success-ring blue" id="sring2">✓</div>
+                  <div class="success-title">Haftalik rejangiz<br>tasdiqlandi!</div>
+                  <div class="success-badge blue">#WK-0531</div>
+                  <div class="success-sub">Har kuni <strong>12:00–13:00</strong> oralig'ida<br>yetkazib beriladi</div>
+                  <div style="background:white;border:1px solid var(--b-b);border-radius:12px;padding:12px 16px;width:240px;">
+                    <div style="font-size:12px;font-weight:700;color:var(--b);margin-bottom:6px;">📊 Haftalik ratsion</div>
+                    <div style="font-size:11px;color:#374151;line-height:1.8;">
+                      • Kaloriya: ~2 000 kcal/kun<br>
+                      • Oqsil: ~85g · Uglevod: ~200g<br>
+                      • Yog': ~60g · Vitamin: A,C,D
+                    </div>
+                  </div>
+                  <div class="success-detail">📱 Haftalik jadval emailingizga yuborildi</div>
+                  <button class="btn-main blue" style="width:220px;margin-top:8px;" onclick="resetToHome()">Yopish — Bosh sahifa</button>
+                </div>
+              </div>
+
+            </div><!-- /screens-container -->
+          </div>
+        </div>
+
+        <!-- CTA below phone -->
+        <div style="text-align:center;">
+          <div style="font-size:12px;color:#4b5563;font-weight:500;">👆 Tugmalarni bosing</div>
+        </div>
+      </div><!-- /phone-mockup-wrap -->
+
+    </div><!-- /demo-stage -->
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     PART 3: TWO MODES COMPARISON
+══════════════════════════════════════════════════════════ -->
+<section class="modes-section">
+  <div class="modes-inner">
+    <div class="modes-head fade-in">
+      <div class="mode-sec-label">Ikki Rejim</div>
+      <h2>MEALTIME: BITTA ILOVA —<br><span>IKKI REJIM</span></h2>
+      <p>Har bir foydalanuvchi uchun to'liq moslashtirilgan ovqatlanish tajribasi</p>
+    </div>
+
+    <div class="modes-grid">
+
+      <!-- STUDENT MODE -->
+      <div class="mode-col2 fade-in">
+        <div style="text-align:center;">
+          <div class="mode-tag g">🎓 Student Mode</div>
+          <div class="mode-title-lg">Tezkorlik</div>
+          <div class="mode-sub2">Oddiy, tez, hamyonbop</div>
+        </div>
+
+        <!-- Static phone: QR -->
+        <div class="iphone-static">
+          <div class="is-notch"></div>
+          <div class="is-screen">
+            <div class="is-status"><span>9:41</span><span>▊🔋</span></div>
+            <div class="is-body">
+              <div style="background:linear-gradient(135deg,#27ae60,#1a9248);border-radius:9px;padding:8px;color:white;text-align:center;margin-bottom:5px;">
+                <div style="font-size:13px;font-weight:800;">🍽 MealTime</div>
+                <div style="font-size:8px;opacity:.85;">Tezkor Buyurtma</div>
+              </div>
+              <div class="is-qr-frame">
+                <div class="is-qr-box">
+                  <div class="qb d"></div><div class="qb d"></div><div class="qb d"></div><div class="qb"></div><div class="qb d"></div><div class="qb d"></div><div class="qb d"></div>
+                  <div class="qb d"></div><div class="qb"></div><div class="qb d"></div><div class="qb d"></div><div class="qb d"></div><div class="qb"></div><div class="qb d"></div>
+                  <div class="qb d"></div><div class="qb d"></div><div class="qb d"></div><div class="qb"></div><div class="qb d"></div><div class="qb d"></div><div class="qb d"></div>
+                  <div class="qb"></div><div class="qb d"></div><div class="qb"></div><div class="qb d"></div><div class="qb"></div><div class="qb d"></div><div class="qb"></div>
+                  <div class="qb d"></div><div class="qb"></div><div class="qb d"></div><div class="qb d"></div><div class="qb d"></div><div class="qb"></div><div class="qb d"></div>
+                  <div class="qb d"></div><div class="qb d"></div><div class="qb"></div><div class="qb d"></div><div class="qb"></div><div class="qb d"></div><div class="qb d"></div>
+                  <div class="qb d"></div><div class="qb"></div><div class="qb d"></div><div class="qb"></div><div class="qb d"></div><div class="qb"></div><div class="qb d"></div>
+                </div>
+                <div class="is-qr-label">QR bilan olish</div>
+                <div class="is-qr-sub">Navbatsiz, tezkor, qulay</div>
+              </div>
+              <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:7px;padding:5px 7px;text-align:center;font-size:8px;font-weight:700;color:#27ae60;">⚡ Buyurtma tayyor — 3 daqiqada</div>
+              <div style="background:#27ae60;border-radius:7px;padding:7px;text-align:center;color:white;font-size:9px;font-weight:700;margin-top:3px;">Olish uchun skanerlang →</div>
+            </div>
+          </div>
+        </div>
+
+        <ul class="mode-bullets2">
+          <li><div class="mb-icon g">⚡</div><span><strong>Oddiy va tezkor</strong> buyurtma berish</span></li>
+          <li><div class="mb-icon g">📱</div><span><strong>Navbatsiz QR-kod</strong> bilan olish</span></li>
+          <li><div class="mb-icon g">💰</div><span><strong>Hamyonbop menyu</strong> — talaba byudjeti</span></li>
+        </ul>
+      </div>
+
+      <div class="modes-sep"></div>
+
+      <!-- PRO MODE -->
+      <div class="mode-col2 fade-in" style="transition-delay:.12s">
+        <div style="text-align:center;">
+          <div class="mode-tag b">💎 Pro Mode</div>
+          <div class="mode-title-lg">Analitika va Sog'lik</div>
+          <div class="mode-sub2">AI asosida shaxsiy ovqatlanish</div>
+        </div>
+
+        <!-- Static phone: nutrition -->
+        <div class="iphone-static">
+          <div class="is-notch"></div>
+          <div class="is-screen">
+            <div class="is-status"><span>9:41</span><span>▊</span></div>
+            <div class="is-body" style="background:#f8fafc;">
+              <div style="background:linear-gradient(135deg,#2563eb,#1d4ed8);border-radius:9px;padding:8px;color:white;text-align:center;margin-bottom:5px;">
+                <div style="font-size:13px;font-weight:800;">💎 Pro Rejim</div>
+                <div style="font-size:8px;opacity:.85;">AI Sog'lik Analitikasi</div>
+              </div>
+              <div class="is-nut">
+                <div class="is-nut-header">
+                  <svg class="is-ring" viewBox="0 0 46 46">
+                    <circle cx="23" cy="23" r="19" fill="none" stroke="#e5e7eb" stroke-width="5"/>
+                    <circle cx="23" cy="23" r="19" fill="none" stroke="#2563eb" stroke-width="5" stroke-dasharray="76 44" stroke-linecap="round" transform="rotate(-90 23 23)"/>
+                    <circle cx="23" cy="23" r="19" fill="none" stroke="#27ae60" stroke-width="5" stroke-dasharray="28 92" stroke-linecap="round" transform="rotate(55 23 23)"/>
+                    <text x="23" y="27" text-anchor="middle" font-size="8" font-weight="800" fill="#111">64%</text>
+                  </svg>
+                  <div class="is-nut-vals">
+                    <div class="iv">1 240</div>
+                    <div class="il">/ 1 900 kcal</div>
+                    <div class="io">✓ Normada</div>
+                  </div>
+                </div>
+                <div class="is-macro">
+                  <div style="font-size:7.5px;font-weight:700;color:#374151;margin-bottom:2px;">Makronutrientlar</div>
+                  <div class="is-macro-row"><div class="imr-name">Oqsil</div><div class="imr-bar"><div class="imr-fill f-pr"></div></div><div class="imr-val">82g</div></div>
+                  <div class="is-macro-row"><div class="imr-name">Uglevod</div><div class="imr-bar"><div class="imr-fill f-ca"></div></div><div class="imr-val">156g</div></div>
+                  <div class="is-macro-row"><div class="imr-name">Yog'lar</div><div class="imr-bar"><div class="imr-fill f-fa"></div></div><div class="imr-val">38g</div></div>
+                </div>
+              </div>
+              <div style="background:white;border:1px solid #bfdbfe;border-radius:7px;padding:5px 7px;display:flex;gap:4px;align-items:center;margin-top:3px;">
+                <span style="font-size:11px;">🤖</span>
+                <div><div style="font-size:7px;font-weight:700;color:#1d4ed8;">AI Tavsiya</div><div style="font-size:6px;color:#6b7280;">Ko'proq oqsil isteʼmol qiling</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <ul class="mode-bullets2">
+          <li><div class="mb-icon b">🤖</div><span><strong>AI asosida shaxsiy ratsion</strong></span></li>
+          <li><div class="mb-icon b">📊</div><span><strong>Kaloriya va nutrient nazorati</strong></span></li>
+          <li><div class="mb-icon b">🏥</div><span><strong>Sog'lomlik bo'yicha tavsiyalar</strong></span></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer-brand">Meal<span>Time</span></div>
+  <p>Ovqatlanishni osonlashtirish — talabalar va xodimlar uchun</p>
+  <p style="margin-top:6px;font-size:11px;color:#d1d5db;">© 2025 MealTime. Barcha huquqlar himoyalangan.</p>
+</footer>
+
+<!-- ══════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════════ -->
+<script>
+/* ─── State ─── */
+let currentScreen = 's1';
+let currentFlow = null; // 'student' | 'pro'
+let selectedFood = null;
+let weeklySelections = {};
+let weeklyKcal = { wfc1:380, wfc2:420, wfc3:510, wfc4:445 };
+let foodData = {
+  fc1:{ emoji:'🍜', name:'Lag\'mon', price:'12 000 so\'m' },
+  fc2:{ emoji:'🥗', name:'Tuna Salat', price:'8 500 so\'m' },
+  fc3:{ emoji:'🍛', name:'Palov', price:'15 000 so\'m' },
+  fc4:{ emoji:'🍗', name:'Tovuq Shurva', price:'11 000 so\'m' }
+};
+
+/* ─── Screen flows ─── */
+const studentFlow = ['s1','s2','s3a','s4a','s5a'];
+const proFlow     = ['s1','s2','s3b','s4b','s5b','s6b'];
+
+const flowLabels = {
+  student:[
+    { label:'Ro\'yxatdan O\'tish', sub:'SMS tasdiqlash', id:'s1' },
+    { label:'Rejimni Tanlash', sub:'Talaba rejimi', id:'s2' },
+    { label:'Menyu', sub:'Taom tanlash', id:'s3a' },
+    { label:'Savat', sub:'Manzil', id:'s4a' },
+    { label:'Tayyor!', sub:'Muvaffaqiyat', id:'s5a' }
+  ],
+  pro:[
+    { label:'Ro\'yxatdan O\'tish', sub:'SMS tasdiqlash', id:'s1' },
+    { label:'Rejimni Tanlash', sub:'Xodim rejimi', id:'s2' },
+    { label:'So\'rovnoma', sub:'Ma\'lumotlar', id:'s3b' },
+    { label:'Haftalik Menyu', sub:'Tanlash', id:'s4b' },
+    { label:'Savat', sub:'Korporativ', id:'s5b' },
+    { label:'Tayyor!', sub:'Muvaffaqiyat', id:'s6b' }
+  ]
+};
+
+/* ─── Transition ─── */
+function goTo(screenId) {
+  const all = document.querySelectorAll('.app-screen');
+  const current = document.querySelector('.app-screen.active');
+
+  if (current && current.id === screenId) return;
+
+  // exit current
+  if (current) {
+    current.classList.remove('active');
+    current.classList.add('exit-left');
+    setTimeout(() => { current.classList.remove('exit-left'); }, 400);
+  }
+
+  // enter next
+  const next = document.getElementById(screenId);
+  if (next) {
+    next.style.transform = 'translateX(60px)';
+    next.style.opacity = '0';
+    next.style.pointerEvents = 'none';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        next.classList.add('active');
+        next.style.transform = '';
+        next.style.opacity = '';
+        next.style.pointerEvents = '';
+      });
+    });
+  }
+
+  currentScreen = screenId;
+  updateProgress();
+}
+
+function goStudentFlow() {
+  currentFlow = 'student';
+  document.getElementById('studentCard').classList.add('selected');
+  document.getElementById('proCard').classList.remove('selected-b');
+  updateProgress();
+  setTimeout(() => goTo('s3a'), 200);
+}
+
+function goProFlow() {
+  currentFlow = 'pro';
+  document.getElementById('proCard').classList.add('selected-b');
+  document.getElementById('studentCard').classList.remove('selected');
+  updateProgress();
+  setTimeout(() => goTo('s3b'), 200);
+}
+
+function resetToHome() {
+  currentFlow = null;
+  selectedFood = null;
+  weeklySelections = {};
+  // reset food cards
+  document.querySelectorAll('.food-card').forEach(f => f.classList.remove('selected'));
+  document.querySelectorAll('.fc-check').forEach(c => { c.style.background=''; c.style.color='transparent'; });
+  document.getElementById('menuContinueBtn').disabled = true;
+  document.getElementById('menuContinueBtn').style.opacity = '.5';
+  // reset weekly
+  document.querySelectorAll('.week-food-card').forEach(f => f.classList.remove('selected'));
+  document.querySelectorAll('[id^="wfc"][id$="-ch"]').forEach(c => { c.innerHTML='✓'; c.style.background=''; c.style.color=''; });
+  document.getElementById('weekKcal').textContent = '0 kcal / hafta';
+  document.getElementById('weekCount').textContent = '0 / 5';
+  document.getElementById('weekContinueBtn').disabled = true;
+  document.getElementById('weekContinueBtn').style.opacity = '.5';
+  // reset mode cards
+  document.getElementById('studentCard').classList.remove('selected');
+  document.getElementById('proCard').classList.remove('selected-b');
+  updateProgress();
+  goTo('s1');
+}
+
+/* ─── Food selection (student) ─── */
+function selectFood(id) {
+  // deselect all
+  document.querySelectorAll('.food-card').forEach(f => f.classList.remove('selected'));
+  document.querySelectorAll('.fc-check').forEach(c => { c.style.color='transparent'; c.style.background=''; c.style.borderColor='#e5e7eb'; });
+  // select chosen
+  const card = document.getElementById(id);
+  card.classList.add('selected');
+  const chk = document.getElementById(id+'-check');
+  chk.style.color = 'white';
+  chk.style.background = '#27ae60';
+  chk.style.borderColor = '#27ae60';
+  selectedFood = id;
+  // update cart preview
+  const d = foodData[id];
+  document.getElementById('cartEmoji').textContent = d.emoji;
+  document.getElementById('cartName').textContent = d.name;
+  document.getElementById('cartPrice').textContent = d.price;
+  document.getElementById('totalDisplay').textContent = d.price;
+  // enable continue
+  const btn = document.getElementById('menuContinueBtn');
+  btn.disabled = false;
+  btn.style.opacity = '1';
+}
+
+/* ─── Address selection (student) ─── */
+function selectAddr(id) {
+  ['addr1','addr2','addr3'].forEach(a => {
+    const el = document.getElementById(a);
+    el.classList.remove('selected');
+    const r = el.querySelector('.ao-radio');
+    r.style.background = '';
+    r.style.borderColor = '#e5e7eb';
+    r.innerHTML = '';
+  });
+  const chosen = document.getElementById(id);
+  chosen.classList.add('selected');
+}
+
+/* ─── Corp address selection (pro) ─── */
+function selectCorpAddr(id) {
+  ['corp1','corp2','corp3'].forEach(a => {
+    const el = document.getElementById(a);
+    el.classList.remove('selected-b');
+    const r = el.querySelector('.ao-radio');
+    r.style.background = '';
+    r.style.borderColor = '#e5e7eb';
+    r.innerHTML = '';
+  });
+  document.getElementById(id).classList.add('selected-b');
+}
+
+/* ─── Weekly food selection ─── */
+function selectWeekFood(id) {
+  const card = document.getElementById(id);
+  const chk = document.getElementById(id+'-ch');
+  if (weeklySelections[id]) {
+    delete weeklySelections[id];
+    card.classList.remove('selected');
+    chk.innerHTML = '✓';
+    chk.style.background = '';
+    chk.style.color = '';
+  } else {
+    weeklySelections[id] = true;
+    card.classList.add('selected');
+    chk.innerHTML = '✓';
+    chk.style.background = '#2563eb';
+    chk.style.borderColor = '#2563eb';
+    chk.style.color = 'white';
+  }
+  // update summary
+  let totalKcal = 0;
+  let count = Object.keys(weeklySelections).length;
+  Object.keys(weeklySelections).forEach(k => { totalKcal += weeklyKcal[k] || 0; });
+  document.getElementById('weekKcal').textContent = (totalKcal * 5) + ' kcal / hafta';
+  document.getElementById('weekCount').textContent = count + ' / 5 kun';
+  const btn = document.getElementById('weekContinueBtn');
+  if (count > 0) {
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  } else {
+    btn.disabled = true;
+    btn.style.opacity = '.5';
+  }
+}
+
+/* ─── Day tabs ─── */
+function switchDay(el, day) {
+  document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+/* ─── Flow progress indicator ─── */
+function updateProgress() {
+  const container = document.getElementById('flowProgress');
+  const flow = currentFlow === 'pro' ? proFlow : studentFlow;
+  const labels = currentFlow === 'pro' ? flowLabels.pro : flowLabels.student;
+  const currentIdx = labels.findIndex(l => l.id === currentScreen);
+
+  let html = '';
+  labels.forEach((item, i) => {
+    const isDone = i < currentIdx;
+    const isActive = i === currentIdx;
+    const dotClass = currentFlow === 'pro'
+      ? (isDone ? 'done-b' : isActive ? 'active-b' : '')
+      : (isDone ? 'done' : isActive ? 'active' : '');
+    const textClass = currentFlow === 'pro'
+      ? (isDone ? 'done-b' : isActive ? 'active' : '')
+      : (isDone ? 'done' : isActive ? 'active' : '');
+    const connClass = currentFlow === 'pro'
+      ? (isDone ? 'done-b' : '')
+      : (isDone ? 'done' : '');
+
+    html += `<div class="fp-item">
+      <div class="fp-line-wrap">
+        <div class="fp-dot ${dotClass}">${isDone ? '✓' : i+1}</div>
+        ${i < labels.length-1 ? `<div class="fp-connector ${connClass}"></div>` : ''}
+      </div>
+      <div class="fp-text">
+        <div class="fp-label ${textClass}">${item.label}</div>
+        <div class="fp-sub">${item.sub}</div>
+      </div>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+/* ─── SMS button ─── */
+document.getElementById('smsBtn').addEventListener('click', function() {
+  const input = document.getElementById('phoneInput');
+  // slight shake if empty
+  if (!input.value) {
+    input.style.borderColor = '#ef4444';
+    input.style.animation = 'shake .3s ease';
+    setTimeout(() => { input.style.borderColor = ''; input.style.animation = ''; }, 600);
+    return;
+  }
+  this.textContent = '⏳ Yuborilmoqda...';
+  this.disabled = true;
+  setTimeout(() => {
+    this.textContent = '✓ Kod yuborildi!';
+    this.style.background = '#15803d';
+    setTimeout(() => goTo('s2'), 700);
+  }, 900);
+});
+
+/* ─── Scroll reveal ─── */
+const revealEls = document.querySelectorAll('.fade-in');
+const revIO = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revIO.unobserve(e.target); } });
+}, { threshold: 0.07, rootMargin: '0px 0px -28px 0px' });
+revealEls.forEach(el => revIO.observe(el));
+
+/* ─── Success ring pop ─── */
+const ringIO = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.animation = 'none';
+      void e.target.offsetWidth;
+      e.target.style.animation = '';
+    }
+  });
+}, { threshold: 0.8 });
+['sring1','sring2'].forEach(id => { const el = document.getElementById(id); if(el) ringIO.observe(el); });
+
+/* ─── CSS shake animation ─── */
+const style = document.createElement('style');
+style.textContent = `@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }`;
+document.head.appendChild(style);
+
+/* ─── Init ─── */
+updateProgress();
+</script>
+</body>
+</html>
